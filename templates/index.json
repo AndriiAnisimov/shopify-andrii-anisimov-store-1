@@ -97,7 +97,7 @@
       "type": "banner-product",
       "name": "Banner Product",
       "settings": {
-        "product": ""
+        "product": "test-title"
       }
     }
   },
