@@ -1,6 +1,6 @@
 {% schema %}
 {
-  "name": "Product Spotlight",
+  "name": "Banner Product",
   "settings": [
     {
       "type": "product",
@@ -10,85 +10,84 @@
   ],
   "presets": [
     {
-      "name": "Product Spotlight"
+      "name": "Banner Product"
     }
   ]
 }
 {% endschema %}
 
-<section class="product-spotlight">
-    {% assign product = all_products[section.settings.product] %}
-    {% if product %}
-        <div class="product-spotlight__wrapper">
+{% assign product = all_products[section.settings.product] %}
 
-            <!-- Left: gallery -->
-            <div class="product-spotlight__gallery">
-                <div class="product-spotlight__thumbnails">
-                    {% for image in product.images %}
-                        <button class="thumb {% if forloop.first %}active{% endif %}" data-image="{{ image | img_url: '800x' }}">
-                            <img src="{{ image | img_url: '200x' }}" alt="{{ image.alt | escape }}">
+<section class="banner-product">
+    <div class="banner-product__gallery">
+        <div class="banner-product__thumbnails">
+            {% for image in product.images %}
+                <button class="thumb {% if forloop.first %}active{% endif %}">
+                    <img src="{{ image | img_url: '200x200' }}" alt="{{ image.alt | escape }}">
+                </button>
+            {% endfor %}
+        </div>
+        <div class="banner-product__image">
+            <img id="mainImage" src="{{ product.featured_image | img_url: '600x600' }}" alt="{{ product.title }}">
+        </div>
+    </div>
+
+    <div class="banner-product__details">
+        <span class="banner-product__tag">⭐ Highly Rated</span>
+        <h1 class="banner-product__title">{{ product.title }}</h1>
+        <p class="banner-product__price">{{ product.price | money }}</p>
+
+        <div class="banner-product__colors">
+            {% for image in product.images limit:3 %}
+                <img src="{{ image | img_url: '100x100' }}" class="{% if forloop.first %}active{% endif %}" alt="{{ image.alt }}">
+            {% endfor %}
+        </div>
+
+        {% if product.variants.size > 1 %}
+            <div class="banner-product__sizes">
+                <h3>Select Size:</h3>
+                <div class="sizes">
+                    {% for variant in product.variants %}
+                        <button data-variant-id="{{ variant.id }}"
+                                {% if forloop.first %}class="active"{% endif %}>
+                            {{ variant.title }}
                         </button>
                     {% endfor %}
                 </div>
-                <div class="product-spotlight__image">
-                    <img id="mainImage-{{ section.id }}" src="{{ product.featured_image | img_url: '800x' }}" alt="{{ product.featured_image.alt | escape }}">
-                </div>
             </div>
+        {% endif %}
 
-            <!-- Right: details -->
-            <div class="product-spotlight__details">
-                <span class="product-spotlight__tag">⭐ Highly Rated</span>
-                <h2 class="product-spotlight__title">{{ product.title }}</h2>
-                <p class="product-spotlight__price">{{ product.price | money }}</p>
+        <form method="post" action="/cart/add">
+            <input type="hidden" name="id" value="{{ product.variants.first.id }}" id="selected-variant">
+            <button type="submit" class="btn">Add To Bag</button>
+        </form>
 
-                <!-- Variants -->
-                {% if product.variants.size > 1 %}
-                    <div class="product-spotlight__sizes">
-                        <h3>Select Size:</h3>
-                        <div class="sizes">
-                            {% for variant in product.variants %}
-                                <button data-variant="{{ variant.id }}" {% if forloop.first %}class="active"{% endif %}>
-                                    {{ variant.title }}
-                                </button>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
-
-                <form method="post" action="/cart/add">
-                    <input type="hidden" name="id" value="{{ product.variants.first.id }}" id="variantInput-{{ section.id }}">
-                    <button type="submit" class="btn">Add To Bag</button>
-                </form>
-
-                <p class="product-spotlight__desc">
-                    {{ product.description | strip_html | truncate: 200 }}
-                </p>
-            </div>
-        </div>
-    {% endif %}
+        <p class="banner-product__desc">
+            {{ product.description | strip_html | truncate: 200 }}
+        </p>
+    </div>
 </section>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const sectionId = "{{ section.id }}";
-        const mainImage = document.getElementById(`mainImage-${sectionId}`);
-        const thumbs = document.querySelectorAll(`#shopify-section-${sectionId} .thumb`);
-        const sizeButtons = document.querySelectorAll(`#shopify-section-${sectionId} .sizes button`);
-        const variantInput = document.getElementById(`variantInput-${sectionId}`);
+        const thumbs = document.querySelectorAll('.thumb');
+        const mainImage = document.getElementById('mainImage');
+        const sizeButtons = document.querySelectorAll('.sizes button');
+        const variantInput = document.getElementById('selected-variant');
 
-        thumbs.forEach(btn => {
-            btn.addEventListener("click", () => {
-                document.querySelector(`#shopify-section-${sectionId} .thumb.active`)?.classList.remove("active");
-                btn.classList.add("active");
-                mainImage.src = btn.dataset.image;
+        thumbs.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                document.querySelector('.thumb.active')?.classList.remove('active');
+                btn.classList.add('active');
+                mainImage.src = btn.querySelector('img').src.replace('200x200','600x600');
             });
         });
 
-        sizeButtons.forEach(btn => {
-            btn.addEventListener("click", () => {
-                document.querySelector(`#shopify-section-${sectionId} .sizes .active`)?.classList.remove("active");
-                btn.classList.add("active");
-                variantInput.value = btn.dataset.variant;
+        sizeButtons.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                document.querySelector('.sizes .active')?.classList.remove('active');
+                btn.classList.add('active');
+                variantInput.value = btn.getAttribute('data-variant-id');
             });
         });
     });
