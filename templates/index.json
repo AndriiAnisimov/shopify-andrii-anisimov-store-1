@@ -93,15 +93,17 @@
         "padding_bottom": 36
       }
     },
-    "new_empty_section_BNrnit": {
-      "type": "new-empty-section",
-      "name": "New Empty Section",
-      "settings": {}
+    "product_spotlight_3Y7CDJ": {
+      "type": "product-spotlight",
+      "name": "Product Spotlight",
+      "settings": {
+        "product": ""
+      }
     }
   },
   "order": [
     "slideshow_9k89ge",
     "featured_collection",
-    "new_empty_section_BNrnit"
+    "product_spotlight_3Y7CDJ"
   ]
 }
