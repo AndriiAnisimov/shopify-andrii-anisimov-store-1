@@ -92,18 +92,10 @@
         "padding_top": 44,
         "padding_bottom": 36
       }
-    },
-    "product_spotlight_3Y7CDJ": {
-      "type": "product-spotlight",
-      "name": "Product Spotlight",
-      "settings": {
-        "product": ""
-      }
     }
   },
   "order": [
     "slideshow_9k89ge",
-    "featured_collection",
-    "product_spotlight_3Y7CDJ"
+    "featured_collection"
   ]
 }
