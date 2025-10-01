@@ -16,6 +16,8 @@
 }
 {% endschema %}
 
+{{ 'banner-product.css' | asset_url | stylesheet_tag }}
+
 {% assign product = all_products[section.settings.product] %}
 
 <section class="banner-product">
