@@ -1,0 +1,95 @@
+{% schema %}
+{
+  "name": "Product Spotlight",
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Select product"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Spotlight"
+    }
+  ]
+}
+{% endschema %}
+
+<section class="product-spotlight">
+    {% assign product = all_products[section.settings.product] %}
+    {% if product %}
+        <div class="product-spotlight__wrapper">
+
+            <!-- Left: gallery -->
+            <div class="product-spotlight__gallery">
+                <div class="product-spotlight__thumbnails">
+                    {% for image in product.images %}
+                        <button class="thumb {% if forloop.first %}active{% endif %}" data-image="{{ image | img_url: '800x' }}">
+                            <img src="{{ image | img_url: '200x' }}" alt="{{ image.alt | escape }}">
+                        </button>
+                    {% endfor %}
+                </div>
+                <div class="product-spotlight__image">
+                    <img id="mainImage-{{ section.id }}" src="{{ product.featured_image | img_url: '800x' }}" alt="{{ product.featured_image.alt | escape }}">
+                </div>
+            </div>
+
+            <!-- Right: details -->
+            <div class="product-spotlight__details">
+                <span class="product-spotlight__tag">⭐ Highly Rated</span>
+                <h2 class="product-spotlight__title">{{ product.title }}</h2>
+                <p class="product-spotlight__price">{{ product.price | money }}</p>
+
+                <!-- Variants -->
+                {% if product.variants.size > 1 %}
+                    <div class="product-spotlight__sizes">
+                        <h3>Select Size:</h3>
+                        <div class="sizes">
+                            {% for variant in product.variants %}
+                                <button data-variant="{{ variant.id }}" {% if forloop.first %}class="active"{% endif %}>
+                                    {{ variant.title }}
+                                </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <form method="post" action="/cart/add">
+                    <input type="hidden" name="id" value="{{ product.variants.first.id }}" id="variantInput-{{ section.id }}">
+                    <button type="submit" class="btn">Add To Bag</button>
+                </form>
+
+                <p class="product-spotlight__desc">
+                    {{ product.description | strip_html | truncate: 200 }}
+                </p>
+            </div>
+        </div>
+    {% endif %}
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const sectionId = "{{ section.id }}";
+        const mainImage = document.getElementById(`mainImage-${sectionId}`);
+        const thumbs = document.querySelectorAll(`#shopify-section-${sectionId} .thumb`);
+        const sizeButtons = document.querySelectorAll(`#shopify-section-${sectionId} .sizes button`);
+        const variantInput = document.getElementById(`variantInput-${sectionId}`);
+
+        thumbs.forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelector(`#shopify-section-${sectionId} .thumb.active`)?.classList.remove("active");
+                btn.classList.add("active");
+                mainImage.src = btn.dataset.image;
+            });
+        });
+
+        sizeButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelector(`#shopify-section-${sectionId} .sizes .active`)?.classList.remove("active");
+                btn.classList.add("active");
+                variantInput.value = btn.dataset.variant;
+            });
+        });
+    });
+</script>
