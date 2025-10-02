@@ -57,7 +57,7 @@
 
                         {% if product.variants.size > 1 %}
                             <div class="banner-product__sizes">
-                                <h3>Виберіть розмір:</h3>
+                                <h3>Select Size:</h3>
                                 <div class="sizes">
                                     {% for variant in product.variants %}
                                         <button type="button"
@@ -96,6 +96,17 @@
                 thumb.classList.add('active');
                 const productId = thumb.dataset.product;
                 document.querySelector(`.banner-product-content[data-product="${productId}"]`).classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.banner-product__sizes button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const sizesContainer = btn.closest('.sizes');
+                sizesContainer.querySelector('button.active')?.classList.remove('active');
+                btn.classList.add('active');
+
+                const formInput = btn.closest('.banner-product-content').querySelector('form input[name="id"]');
+                formInput.value = btn.dataset.variant;
             });
         });
     });
