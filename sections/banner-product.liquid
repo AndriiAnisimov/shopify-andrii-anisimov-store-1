@@ -28,84 +28,74 @@
 
 {{ 'banner-product.css' | asset_url | stylesheet_tag }}
 
-<section class="banner-products">
-    {% for block in section.blocks %}
-        {% assign product = all_products[block.settings.product] %}
-        {% if product %}
-            <div class="banner-product">
-                <div class="banner-product__gallery">
-                    <div class="banner-product__thumbnails">
-                        {% for image in product.images %}
-                            <button class="thumb {% if forloop.first %}active{% endif %}">
-                                <img src="{{ image | img_url: '200x200' }}" alt="{{ image.alt | escape }}">
-                            </button>
-                        {% endfor %}
-                    </div>
-                    <div class="banner-product__image">
-                        <img class="mainImage" src="{{ product.featured_image | img_url: '600x600' }}" alt="{{ product.title }}">
-                    </div>
-                </div>
+<section class="banner-products" id="bannerProducts">
+    <div class="banner-products__thumbnails">
+        {% for block in section.blocks %}
+            {% assign product = all_products[block.settings.product] %}
+            {% if product %}
+                <img
+                        src="{{ product.featured_image | img_url: '150x150' }}"
+                        alt="{{ product.title }}"
+                        class="product-thumb {% if forloop.first %}active{% endif %}"
+                        data-product="{{ block.id }}">
+            {% endif %}
+        {% endfor %}
+    </div>
 
-                <div class="banner-product__details">
-                    <span class="banner-product__tag">⭐ Highly Rated</span>
-                    <h1 class="banner-product__title">{{ product.title }}</h1>
-                    <p class="banner-product__price">{{ product.price | money }}</p>
-
-                    <div class="banner-product__colors">
-                        {% for image in product.images limit:3 %}
-                            <img src="{{ image | img_url: '100x100' }}" class="{% if forloop.first %}active{% endif %}" alt="{{ image.alt }}">
-                        {% endfor %}
+    <div class="banner-products__content">
+        {% for block in section.blocks %}
+            {% assign product = all_products[block.settings.product] %}
+            {% if product %}
+                <div class="banner-product-content {% if forloop.first %}active{% endif %}" data-product="{{ block.id }}">
+                    <div class="banner-product__main">
+                        <img src="{{ product.featured_image | img_url: '800x800' }}" alt="{{ product.title }}">
                     </div>
 
-                    {% if product.variants.size > 1 %}
-                        <div class="banner-product__sizes">
-                            <h3>Select Size:</h3>
-                            <div class="sizes">
-                                {% for variant in product.variants %}
-                                    <button data-variant-id="{{ variant.id }}" {% if forloop.first %}class="active"{% endif %}>
-                                        {{ variant.title }}
-                                    </button>
-                                {% endfor %}
+                    <div class="banner-product__details">
+                        <h1 class="banner-product__title">{{ product.title }}</h1>
+                        <p class="banner-product__price">{{ product.price | money }}</p>
+
+                        {% if product.variants.size > 1 %}
+                            <div class="banner-product__sizes">
+                                <h3>Виберіть розмір:</h3>
+                                <div class="sizes">
+                                    {% for variant in product.variants %}
+                                        <button type="button"
+                                                data-variant="{{ variant.id }}"
+                                                {% if forloop.first %}class="active"{% endif %}>
+                                            {{ variant.title }}
+                                        </button>
+                                    {% endfor %}
+                                </div>
                             </div>
-                        </div>
-                    {% endif %}
+                        {% endif %}
 
-                    <form method="post" action="/cart/add">
-                        <input type="hidden" name="id" value="{{ product.variants.first.id }}" class="selected-variant">
-                        <button type="submit" class="btn">Add To Bag</button>
-                    </form>
+                        <form method="post" action="/cart/add">
+                            <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+                            <button type="submit" class="btn">Add To Bag</button>
+                        </form>
 
-                    <p class="banner-product__desc">
-                        {{ product.description | strip_html | truncate: 200 }}
-                    </p>
+                        <p class="banner-product__desc">{{ product.description | strip_html | truncate: 200 }}</p>
+                    </div>
                 </div>
-            </div>
-        {% endif %}
-    {% endfor %}
+            {% endif %}
+        {% endfor %}
+    </div>
 </section>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        document.querySelectorAll('.banner-product').forEach((productBlock) => {
-            const thumbs = productBlock.querySelectorAll('.thumb');
-            const mainImage = productBlock.querySelector('.mainImage');
-            const sizeButtons = productBlock.querySelectorAll('.sizes button');
-            const variantInput = productBlock.querySelector('.selected-variant');
+        const thumbs = document.querySelectorAll('.product-thumb');
+        const contents = document.querySelectorAll('.banner-product-content');
 
-            thumbs.forEach((btn) => {
-                btn.addEventListener('click', () => {
-                    productBlock.querySelector('.thumb.active')?.classList.remove('active');
-                    btn.classList.add('active');
-                    mainImage.src = btn.querySelector('img').src.replace('200x200','600x600');
-                });
-            });
+        thumbs.forEach(thumb => {
+            thumb.addEventListener('click', () => {
+                document.querySelector('.product-thumb.active')?.classList.remove('active');
+                document.querySelector('.banner-product-content.active')?.classList.remove('active');
 
-            sizeButtons.forEach((btn) => {
-                btn.addEventListener('click', () => {
-                    productBlock.querySelector('.sizes .active')?.classList.remove('active');
-                    btn.classList.add('active');
-                    variantInput.value = btn.getAttribute('data-variant-id');
-                });
+                thumb.classList.add('active');
+                const productId = thumb.dataset.product;
+                document.querySelector(`.banner-product-content[data-product="${productId}"]`).classList.add('active');
             });
         });
     });

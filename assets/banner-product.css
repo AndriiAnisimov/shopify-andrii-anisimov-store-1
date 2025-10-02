@@ -1,102 +1,68 @@
-.product-spotlight {
-    display: flex;
-    gap: 2rem;
-    padding: 2rem;
+.banner-products {
+    display: grid;
+    grid-template-columns: 120px 1fr 1fr;
+    gap: 30px;
+    align-items: start;
 }
 
-.product-spotlight__gallery {
-    display: flex;
-    gap: 1rem;
-}
-
-.product-spotlight__thumbnails {
+.banner-products__thumbnails {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 10px;
 }
 
-.product-spotlight__thumbnails .thumb {
+.banner-products__thumbnails img {
     border: 2px solid transparent;
-    padding: 4px;
-    background: none;
+    border-radius: 6px;
     cursor: pointer;
+    transition: border-color 0.2s ease;
 }
 
-.product-spotlight__thumbnails .thumb.active {
-    border-color: black;
+.banner-products__thumbnails img.active {
+    border-color: #000;
 }
 
-.product-spotlight__thumbnails img {
-    width: 60px;
-    border-radius: 8px;
+.banner-products__content {
+    grid-column: span 2;
+    position: relative;
 }
 
-.product-spotlight__image img {
-    width: 400px;
+.banner-product-content {
+    display: none;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.banner-product-content.active {
+    display: grid;
+}
+
+.banner-product__main img {
+    width: 100%;
     border-radius: 12px;
 }
 
-.product-spotlight__details {
-    flex: 1;
-}
-
-.product-spotlight__tag {
-    background: #f5f5f5;
-    padding: 0.2rem 0.6rem;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    display: inline-block;
-    margin-bottom: 0.5rem;
-}
-
-.product-spotlight__title {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-}
-
-.product-spotlight__price {
-    font-size: 1.4rem;
-    margin-bottom: 1rem;
-    font-weight: bold;
-}
-
-.sizes {
+.banner-product__details {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+    flex-direction: column;
+    gap: 15px;
 }
 
-.sizes button {
-    padding: 0.5rem 1rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    cursor: pointer;
-    background: white;
-}
-
-.sizes button.active {
-    border-color: black;
-    background: #f2f2f2;
-}
-
-.btn {
-    background: black;
-    color: white;
+.banner-product__details .btn {
+    padding: 12px 20px;
+    background: #000;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
     border: none;
-    padding: 1rem 2rem;
     border-radius: 8px;
-    font-size: 1rem;
     cursor: pointer;
-    margin-bottom: 1rem;
+    transition: background 0.3s ease;
+    display: inline-block;
+    text-align: center;
 }
 
-.btn:hover {
-    opacity: 0.9;
-}
-
-.product-spotlight__desc {
-    font-size: 0.95rem;
-    line-height: 1.4;
-    color: #555;
+.banner-product__details .btn:hover {
+    background: #333;
 }
