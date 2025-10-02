@@ -6,9 +6,21 @@
 }
 
 .banner-products__thumbnails {
+    max-height: 400px;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    padding-right: 5px;
+}
+
+.banner-products__thumbnails::-webkit-scrollbar {
+    width: 6px;
+}
+
+.banner-products__thumbnails::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.3);
+    border-radius: 3px;
 }
 
 .banner-products__thumbnails img {

@@ -53,7 +53,7 @@
 
                     <div class="banner-product__details">
                         <h1 class="banner-product__title">{{ product.title }}</h1>
-                        <p class="banner-product__price">{{ product.price | money }}</p>
+                        <p class="banner-product__price">{{ product.variants.first.price | money }}</p>
 
                         {% if product.variants.size > 1 %}
                             <div class="banner-product__sizes">
@@ -62,6 +62,8 @@
                                     {% for variant in product.variants %}
                                         <button type="button"
                                                 data-variant="{{ variant.id }}"
+                                                data-price="{{ variant.price }}"
+                                                data-image="{{ variant.featured_image | img_url: '800x800' }}"
                                                 {% if forloop.first %}class="active"{% endif %}>
                                             {{ variant.title }}
                                         </button>
@@ -86,8 +88,14 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const thumbs = document.querySelectorAll('.product-thumb');
-        const contents = document.querySelectorAll('.banner-product-content');
 
+        // Зберігаємо базові зображення
+        document.querySelectorAll('.banner-product-content').forEach(block => {
+            const mainImg = block.querySelector('.banner-product__main img');
+            mainImg.dataset.baseImage = mainImg.src;
+        });
+
+        // Перемикання між товарами
         thumbs.forEach(thumb => {
             thumb.addEventListener('click', () => {
                 document.querySelector('.product-thumb.active')?.classList.remove('active');
@@ -95,19 +103,64 @@
 
                 thumb.classList.add('active');
                 const productId = thumb.dataset.product;
-                document.querySelector(`.banner-product-content[data-product="${productId}"]`).classList.add('active');
+                const contentBlock = document.querySelector(`.banner-product-content[data-product="${productId}"]`);
+                contentBlock.classList.add('active');
+
+                // Активуємо перший варіант товару
+                const firstVariantBtn = contentBlock.querySelector('.banner-product__sizes button');
+                if(firstVariantBtn){
+                    firstVariantBtn.click();
+                } else {
+                    // Якщо варіантів нема – відновлюємо базове зображення
+                    const mainImg = contentBlock.querySelector('.banner-product__main img');
+                    mainImg.src = mainImg.dataset.baseImage;
+                }
             });
         });
 
-        document.querySelectorAll('.banner-product__sizes button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const sizesContainer = btn.closest('.sizes');
-                sizesContainer.querySelector('button.active')?.classList.remove('active');
+        // Event delegation для кнопок розмірів
+        document.querySelector('.banner-products__content').addEventListener('click', function(e){
+            if(e.target.matches('.banner-product__sizes button')){
+                const btn = e.target;
+
+                // Активний клас
+                btn.closest('.sizes').querySelector('button.active')?.classList.remove('active');
                 btn.classList.add('active');
 
-                const formInput = btn.closest('.banner-product-content').querySelector('form input[name="id"]');
+                const contentBlock = btn.closest('.banner-product-content');
+
+                // Оновлення input форми
+                const formInput = contentBlock.querySelector('form input[name="id"]');
                 formInput.value = btn.dataset.variant;
-            });
+
+                // Оновлення ціни
+                const priceElem = contentBlock.querySelector('.banner-product__price');
+                const price = parseInt(btn.dataset.price, 10); // ціна в копійках
+                priceElem.textContent = Shopify.formatMoney(price); // formatMoney очікує копійки
+
+                // Оновлення зображення
+                const mainImg = contentBlock.querySelector('.banner-product__main img');
+                mainImg.src = btn.dataset.image || mainImg.dataset.baseImage;
+            }
         });
+
+        // Ініціалізуємо перший товар при завантаженні сторінки
+        const firstThumb = document.querySelector('.product-thumb');
+        if(firstThumb) firstThumb.click();
+
+        function adjustThumbnailsHeight() {
+            const mainImage = document.querySelector('.banner-product__main img');
+            const thumbs = document.querySelector('.banner-products__thumbnails');
+
+            if(mainImage && thumbs){
+                thumbs.style.maxHeight = mainImage.clientHeight + "px";
+            }
+        }
+
+        // Виклик при завантаженні
+        adjustThumbnailsHeight();
+
+        // І при ресайзі
+        window.addEventListener('resize', adjustThumbnailsHeight);
     });
 </script>
