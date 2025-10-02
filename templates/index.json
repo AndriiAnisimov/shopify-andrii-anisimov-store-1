@@ -67,10 +67,26 @@
     },
     "banner_product_Bt4pGh": {
       "type": "banner-product",
+      "blocks": {
+        "product_block_QkAKcb": {
+          "type": "product_block",
+          "settings": {
+            "product": "121"
+          }
+        },
+        "product_block_jBdnGA": {
+          "type": "product_block",
+          "settings": {
+            "product": "116"
+          }
+        }
+      },
+      "block_order": [
+        "product_block_QkAKcb",
+        "product_block_jBdnGA"
+      ],
       "name": "Banner Product",
-      "settings": {
-        "product": "116"
-      }
+      "settings": {}
     }
   },
   "order": [
